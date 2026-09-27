@@ -1,0 +1,6 @@
+{
+  "name": "EcoFeast",
+  "description": "AI-powered smart food surplus reduction, redistribution, safety verification, NGO matching, pickup coordination, traceability, and sustainability impact platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
