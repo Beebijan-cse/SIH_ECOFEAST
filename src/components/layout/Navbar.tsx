@@ -34,7 +34,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
-  const { user, role, logout, switchUserRole, isSupabaseLive, refreshSupabaseStatus } = useAuth();
+  const { user, role, logout, switchUserRole, isSupabaseLive, isDemoMode, refreshSupabaseStatus } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -364,9 +364,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
                         </div>
 
                         {/* Quick Role Switcher for Hackathon Demonstrations */}
+                        {isDemoMode && (
                         <div className="py-1 border-t border-slate-100 px-3">
                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1 py-1">
-                            Switch Role (Demo)
+                            Switch Role (Demo Only)
                           </p>
                           <div className="grid grid-cols-2 gap-1 mt-1">
                             {(['kitchen', 'fpu', 'ngo', 'admin'] as UserRole[]).map((r) => (
@@ -384,6 +385,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAI }) => {
                             ))}
                           </div>
                         </div>
+                        )}
 
                         <div className="pt-1 border-t border-slate-100">
                           <button

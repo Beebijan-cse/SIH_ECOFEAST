@@ -618,40 +618,32 @@ export function clearAllData(): void {
 export const dataService = {
   // Profiles
   async getProfiles(): Promise<Profile[]> {
-    ensureStoreInitialized();
     if (isSupabaseConfigured() && supabase) {
-      try {
-        const { data, error } = await supabase.from('profiles').select('*');
-        if (!error && data && data.length > 0) return data as Profile[];
-      } catch (e) {
-        console.warn('Supabase fetch profiles warning, falling back to local store:', e);
-      }
+      const { data, error } = await supabase.from('profiles').select('*');
+      if (error) throw error;
+      return (data || []) as Profile[];
     }
+    ensureStoreInitialized();
     return getStorage<Profile[]>('profiles', SEED_PROFILES);
   },
 
   async getProfileById(id: string): Promise<Profile | null> {
     if (isSupabaseConfigured() && supabase) {
-      try {
-        const { data, error } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle();
-        if (!error && data) return data as Profile;
-      } catch (e) {
-        console.warn('Supabase fetch profile by id warning:', e);
-      }
+      const { data, error } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle();
+      if (error) throw error;
+      return (data as Profile | null) || null;
     }
     const profiles = await this.getProfiles();
     return profiles.find((p) => p.id === id) || null;
   },
 
   async saveProfile(profile: Profile): Promise<Profile> {
-    ensureStoreInitialized();
     if (isSupabaseConfigured() && supabase) {
-      try {
-        await supabase.from('profiles').upsert(profile);
-      } catch (e) {
-        console.warn('Supabase upsert profile warning:', e);
-      }
+      const { error } = await supabase.from('profiles').upsert(profile);
+      if (error) throw error;
+      return profile;
     }
+    ensureStoreInitialized();
     const profiles = getStorage<Profile[]>('profiles', SEED_PROFILES);
     const index = profiles.findIndex((p) => p.id === profile.id);
     if (index >= 0) {
