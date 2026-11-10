@@ -36,7 +36,7 @@ import {
 import { NotificationItem, UserRole } from '../../types';
 
 export const DashboardLayout: React.FC = () => {
-  const { user, role, switchUserRole, logout, isSupabaseLive, refreshSupabaseStatus } = useAuth();
+  const { user, role, switchUserRole, logout, isSupabaseLive, isDemoMode, refreshSupabaseStatus } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -513,6 +513,7 @@ export const DashboardLayout: React.FC = () => {
                     <p className="text-[11px] text-slate-500 truncate">{user?.email || 'user@ecofeast.org'}</p>
                   </div>
 
+                  {isDemoMode && (
                   <div className="px-2 py-1.5">
                     <span className="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                       Switch Role View
@@ -530,6 +531,7 @@ export const DashboardLayout: React.FC = () => {
                       </button>
                     ))}
                   </div>
+                  )}
 
                   <div className="border-t border-slate-100 pt-1.5 px-2">
                     <button
