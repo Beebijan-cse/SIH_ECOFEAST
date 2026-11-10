@@ -18,7 +18,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { UserRole } from '../../types';
 
 export const RegisterPage: React.FC = () => {
-  const { register } = useAuth();
+  const { register, isSupabaseLive } = useAuth();
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState('');
@@ -29,6 +29,7 @@ export const RegisterPage: React.FC = () => {
   const [role, setRole] = useState<UserRole>('kitchen');
   const [location, setLocation] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,7 +38,12 @@ export const RegisterPage: React.FC = () => {
       setError('Please complete all required fields.');
       return;
     }
+    if (password.trim().length < 6) {
+      setError('Use a password with at least 6 characters.');
+      return;
+    }
     setError(null);
+    setSuccessMessage(null);
     setIsSubmitting(true);
 
     const res = await register({
@@ -53,6 +59,10 @@ export const RegisterPage: React.FC = () => {
     setIsSubmitting(false);
 
     if (res.success) {
+      if (res.requiresEmailConfirmation) {
+        setSuccessMessage('Account created. Check your email to confirm it, then sign in.');
+        return;
+      }
       if (role === 'kitchen') navigate('/kitchen/dashboard');
       else if (role === 'fpu') navigate('/fpu/dashboard');
       else if (role === 'ngo') navigate('/ngo/dashboard');
@@ -89,6 +99,18 @@ export const RegisterPage: React.FC = () => {
             <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-xs text-rose-700">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800">
+              {successMessage}
+            </div>
+          )}
+
+          {!isSupabaseLive && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+              Live registration needs a Supabase connection. To explore the local prototype, use a demo account on the sign-in page.
             </div>
           )}
 
@@ -221,6 +243,8 @@ export const RegisterPage: React.FC = () => {
                   <input
                     type="password"
                     required
+                  minLength={6}
+                  autoComplete="new-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Minimum 6 characters"
